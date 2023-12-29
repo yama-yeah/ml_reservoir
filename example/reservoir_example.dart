@@ -16,7 +16,7 @@ void main() {
   data.shuffle();
   final trainData = data.sublist(0, 256);
   final testData = data.sublist(256, 512);
-  final esn = ESNModule(1, outputDim: 32);
+  final esn = ReservoirModule.newNetwork(1, outputDim: 32);
   final trainOutput = esn(trainData);
   esn.resetState();
   final testOutput = esn(testData);
@@ -39,7 +39,7 @@ void main() {
     trainY.add(row);
   }
 
-  final ridge = RidgeRegressor.fit(trainX, trainY);
+  final ridge = Regressor.fit(trainX, trainY);
   final List<List<double>> testX = [];
   for (var i = 0; i < testOutput.length; i++) {
     final List<double> row = [];

@@ -14,7 +14,7 @@ void main() {
   Set<String> uniqueSpecies = Set<String>.from(y.data);
   final yVector = Vector.fromList(
       y.data.map((e) => uniqueSpecies.toList().indexOf(e).toDouble()).toList());
-  final model = RidgeRegressor.fit(trainX, yVector.toList());
+  final model = Regressor.fit(trainX, yVector.toList());
   final predY = model.predict(trainX) as List<double>;
   final mae =
       Vector.fromList(predY).distanceTo(yVector, distance: Distance.manhattan) /

@@ -3,7 +3,8 @@
 /// More dartdocs go here.
 library;
 
-export 'src/regressor/ridge.dart';
-export 'src/reservoir/esn.dart';
+export 'src/regressor/regressor.dart';
+export 'src/reservoir/reservoir.dart';
+
 
 // TODO: Export any libraries intended for clients of this package.

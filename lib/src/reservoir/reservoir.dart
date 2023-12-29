@@ -1,7 +1,7 @@
 import 'package:ml_linalg/linalg.dart';
-import 'package:reservoir/reservoir.dart';
+import 'package:reservoir/src/reservoir/esn.dart';
 
-abstract class ResovoirModule {
+abstract class ReservoirModule {
   ///状態の更新率
   double get alpha;
 
@@ -15,7 +15,7 @@ abstract class ResovoirModule {
   ///入力の次元と出力の次元を指定してモジュールを作成する
   ///connectionProbは結合度を表す。0.05ならば5%のニューロンが結合する
   ///spectralRadiusはスペクトル半径がどれだけ1に近づくかを表す　基本的に１に近ければ近いほど良いが、計算誤差があるのでそこも考慮する
-  factory ResovoirModule.newNetwork(
+  factory ReservoirModule.newNetwork(
     int inputDim, {
     int outputDim = 64,
     double alpha = 0.5,
@@ -35,7 +35,7 @@ abstract class ResovoirModule {
     }
   }
 
-  factory ResovoirModule.loadNetwork(String weightsJson,
+  factory ReservoirModule.loadNetwork(String weightsJson,
       {ReservoirType type = ReservoirType.esn}) {
     switch (type) {
       case ReservoirType.esn:

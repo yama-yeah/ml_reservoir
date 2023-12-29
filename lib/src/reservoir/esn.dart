@@ -5,7 +5,7 @@ import 'package:reservoir/src/activations/activations.dart';
 import 'package:reservoir/src/reservoir/reservoir.dart';
 import 'package:reservoir/src/utils/matrix_utils.dart';
 
-class ESNModule implements ResovoirModule {
+class ESNModule implements ReservoirModule {
   @override
   final double alpha;
   final Matrix _w;
