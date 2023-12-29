@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:ml_linalg/linalg.dart';
 import 'package:reservoir/src/activations/activations.dart';
 import 'package:reservoir/src/reservoir/reservoir.dart';
@@ -5,42 +7,51 @@ import 'package:reservoir/src/utils/matrix_utils.dart';
 
 class ESNModule implements ResovoirModule {
   @override
-  final int inputDim;
-  @override
-  final int outputDim;
-  @override
   final double alpha;
   final Matrix _w;
   final Matrix _wIn;
   @override
   final Matrix Function(Matrix) activation;
+  @override
+  final List<Matrix> stateLogs = []; //状態のログ
   ESNModule(
-    this.inputDim, {
-    this.outputDim = 64,
+    int inputDim, {
+    int outputDim = 64,
     this.alpha = 0.5,
     double connectionProb = 0.05,
     double spectralRadius = 0.99,
     this.activation = sigmoid,
-  })  : _wIn = randomGaussianMatrix(inputDim, outputDim),
-        _w = _createWIn(outputDim);
+    Matrix? wIn,
+    Matrix? w,
+  })  : _wIn = wIn ?? randomGaussianMatrix(inputDim, outputDim),
+        _w = w ?? _createWIn(outputDim, connectionProb: connectionProb);
+
+  factory ESNModule.fromJson(String json) {
+    final jsonMap = jsonDecode(json);
+    final wIn = Matrix.fromList(jsonMap['w_in'] as List<List<double>>);
+    final wRes = Matrix.fromList(jsonMap['w_res'] as List<List<double>>);
+    return ESNModule(0, wIn: wIn, w: wRes);
+  }
+
+  @override
+  String saveWeights() {
+    final jsonMap = {'w_in': _wIn.toList(), 'w_res': _w.toList()};
+    return jsonEncode(jsonMap);
+  }
 
   @override
   List<List<List<double>>> call(List<List<List<double>>> X) {
     final transposedX = transpose3dList(X, 1, 0, 2);
-    List<List<List<double>>> stateLogs = []; //状態のログ
+
     //時間を進める
     for (var t = 0; t < transposedX.length; t++) {
-      final currentState = t == 0
-          ? zerosMatrix(X.length, outputDim)
-          : Matrix.fromList(stateLogs.last); //前の状態を取得
-      final input = Matrix.fromList(transposedX[t]); //B,X
-      //input,output
-      final uin = input * _wIn;
-      final xres = currentState * _w;
-      final next = currentState * (1 - alpha) + activation(uin + xres) * alpha;
-      stateLogs.add(next.toList().map((e) => e.toList()).toList());
+      next(transposedX[t], isNeedState: false);
     }
-    return transpose3dList(stateLogs, 1, 0, 2);
+    return transpose3dList(
+        stateLogs.map((e) => e.map((e) => e.toList()).toList()).toList(),
+        1,
+        0,
+        2);
   }
 
   static Matrix _createWIn(int outputDim,
@@ -56,5 +67,33 @@ class ESNModule implements ResovoirModule {
       maxEigenValue = 0.0001;
     }
     return w / maxEigenValue * spectralRadius;
+  }
+
+  @override
+  List<List<List<double>>> next(List<List<double>> xT,
+      {bool isNeedState = true}) {
+    final currentState = stateLogs.isEmpty
+        ? zerosMatrix(xT.length, _w.columnCount)
+        : stateLogs.last; //前の状態を取得
+    final input = Matrix.fromList(xT); //B,X
+    //input,output
+    final uin = input * _wIn;
+    final xres = currentState * _w;
+    final nextState =
+        currentState * (1 - alpha) + activation(uin + xres) * alpha;
+    stateLogs.add(nextState);
+    if (isNeedState) {
+      return transpose3dList(
+          stateLogs.map((e) => e.map((e) => e.toList()).toList()).toList(),
+          1,
+          0,
+          2);
+    }
+    return [];
+  }
+
+  @override
+  void resetState() {
+    stateLogs.clear();
   }
 }

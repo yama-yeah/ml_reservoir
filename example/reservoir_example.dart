@@ -18,6 +18,7 @@ void main() {
   final testData = data.sublist(256, 512);
   final esn = ESNModule(1, outputDim: 32);
   final trainOutput = esn(trainData);
+  esn.resetState();
   final testOutput = esn(testData);
   //trainOutputの次元が、BatchSize,TimeStep,OutputDimなので、BatchSize,TimeStep*OutputDimに変換する
   final List<List<double>> trainX = [];

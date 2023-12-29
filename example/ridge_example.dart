@@ -20,6 +20,4 @@ void main() {
       Vector.fromList(predY).distanceTo(yVector, distance: Distance.manhattan) /
           yVector.length;
   print('MAE: $mae');
-  final dynamic a = 1;
-  print(a as int);
 }

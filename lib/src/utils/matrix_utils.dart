@@ -2,7 +2,7 @@ import 'package:ml_linalg/linalg.dart';
 import 'dart:math' as math;
 
 extension MatrixUtils on Matrix {
-  Matrix inverse() {
+  Matrix inverse2() {
     final Matrix eye = Matrix.identity(columns.length);
     return solve(eye);
   }
@@ -131,15 +131,15 @@ List<List<List<double>>> transpose3dList(
   final List<List<List<double>>> result = [];
   //numpy.transposeのように、axis0, axis1, axis2の順番で転置する
   Map<int, int> lengthMap = {0: X.length, 1: X[0].length, 2: X[0][0].length};
+  for (var l = 0; l < 3; l++) {
+    assert(lengthMap.containsKey(l));
+  }
   for (var i = 0; i < lengthMap[axis0]!; i++) {
     final List<List<double>> row = [];
     for (var j = 0; j < lengthMap[axis1]!; j++) {
       final List<double> col = [];
       for (var k = 0; k < lengthMap[axis2]!; k++) {
         Map<int, int> indexMap = {axis0: i, axis1: j, axis2: k};
-        for (var l = 0; l < 3; l++) {
-          assert(indexMap.containsKey(l));
-        }
         col.add(X[indexMap[0]!][indexMap[1]!][indexMap[2]!]);
       }
       row.add(col);
@@ -149,10 +149,14 @@ List<List<List<double>>> transpose3dList(
   return result;
 }
 
-//singleton
+///乱数のシードを固定するためのクラス
+///reservoirパッケージの乱数生成は全てこのクラスを通して行う
 class RandomRef {
   static final RandomRef _instance = RandomRef._internal();
   factory RandomRef() => _instance;
   RandomRef._internal();
-  final random = math.Random(43);
+  math.Random random = math.Random(42);
+  setSeed(int seed) {
+    random = math.Random(seed);
+  }
 }
