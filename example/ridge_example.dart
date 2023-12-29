@@ -1,5 +1,5 @@
 import 'package:ml_linalg/linalg.dart';
-import 'package:reservoir/reservoir.dart';
+import 'package:ml_reservoir/reservoir.dart';
 import 'package:ml_dataframe/ml_dataframe.dart';
 
 void main() {

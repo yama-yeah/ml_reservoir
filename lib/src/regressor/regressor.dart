@@ -1,5 +1,5 @@
 import 'package:ml_linalg/matrix.dart';
-import 'package:reservoir/src/regressor/ridge.dart';
+import 'package:ml_reservoir/src/regressor/ridge.dart';
 
 abstract class Regressor {
   Matrix get weights;

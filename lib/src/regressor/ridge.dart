@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:ml_linalg/matrix.dart';
 import 'package:ml_linalg/vector.dart';
-import 'package:reservoir/src/regressor/regressor.dart';
+import 'package:ml_reservoir/src/regressor/regressor.dart';
 
 class RidgeRegressor implements Regressor {
   @override

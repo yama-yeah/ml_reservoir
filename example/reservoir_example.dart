@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:ml_linalg/linalg.dart';
-import 'package:reservoir/reservoir.dart';
+import 'package:ml_reservoir/reservoir.dart';
 
 void main() {
   final List<List<List<double>>> data = [];

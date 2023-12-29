@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:ml_linalg/linalg.dart';
-import 'package:reservoir/src/activations/activations.dart';
-import 'package:reservoir/src/reservoir/reservoir.dart';
-import 'package:reservoir/src/utils/matrix_utils.dart';
+import 'package:ml_reservoir/src/activations/activations.dart';
+import 'package:ml_reservoir/src/reservoir/reservoir.dart';
+import 'package:ml_reservoir/src/utils/matrix_utils.dart';
 
 class ESNModule implements ReservoirModule {
   @override

@@ -1,5 +1,5 @@
 import 'package:ml_linalg/linalg.dart';
-import 'package:reservoir/src/reservoir/esn.dart';
+import 'package:ml_reservoir/src/reservoir/esn.dart';
 
 abstract class ReservoirModule {
   ///状態の更新率
