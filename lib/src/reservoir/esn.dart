@@ -10,6 +10,7 @@ class ESNModule implements ReservoirModule {
   final double alpha;
   final Matrix _w;
   final Matrix _wIn;
+  final int maxLogLength;
   @override
   final Matrix Function(Matrix) activation;
   @override
@@ -23,6 +24,7 @@ class ESNModule implements ReservoirModule {
     this.activation = sigmoid,
     Matrix? wIn,
     Matrix? w,
+    this.maxLogLength = -1,
   })  : _wIn = wIn ?? randomGaussianMatrix(inputDim, outputDim),
         _w = w ?? _createWIn(outputDim, connectionProb: connectionProb);
 
@@ -35,7 +37,11 @@ class ESNModule implements ReservoirModule {
 
   @override
   String saveWeights() {
-    final jsonMap = {'w_in': _wIn.toList(), 'w_res': _w.toList()};
+    final jsonMap = {
+      'w_in': _wIn.toList(),
+      'w_res': _w.toList(),
+      'max_log_length': maxLogLength,
+    };
     return jsonEncode(jsonMap);
   }
 
@@ -48,10 +54,11 @@ class ESNModule implements ReservoirModule {
       next(transposedX[t], isNeedState: false);
     }
     return transpose3dList(
-        stateLogs.map((e) => e.map((e) => e.toList()).toList()).toList(),
-        1,
-        0,
-        2);
+      stateLogs.map((e) => e.map((e) => e.toList()).toList()).toList(),
+      1,
+      0,
+      2,
+    );
   }
 
   static Matrix _createWIn(int outputDim,
@@ -81,13 +88,17 @@ class ESNModule implements ReservoirModule {
     final xres = currentState * _w;
     final nextState =
         currentState * (1 - alpha) + activation(uin + xres) * alpha;
+    if (maxLogLength > 0 && stateLogs.length >= maxLogLength) {
+      stateLogs.removeAt(0);
+    }
     stateLogs.add(nextState);
     if (isNeedState) {
       return transpose3dList(
-          stateLogs.map((e) => e.map((e) => e.toList()).toList()).toList(),
-          1,
-          0,
-          2);
+        stateLogs.map((e) => e.map((e) => e.toList()).toList()).toList(),
+        1,
+        0,
+        2,
+      );
     }
     return [];
   }
